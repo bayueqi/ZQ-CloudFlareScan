@@ -1,0 +1,91 @@
+name: Build CloudFlareScan
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-latest]
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install PySide6 aiohttp pyinstaller requests
+
+    - name: Check files
+      run: |
+        ls -la
+      shell: bash
+
+    - name: Build on Windows
+      if: matrix.os == 'windows-latest'
+      run: |
+        dir
+        # 使用 --add-data 将图标文件添加到打包中，这样运行时可以在 sys._MEIPASS 中找到
+        pyinstaller --onefile --windowed --name CloudFlareScan-windows --icon=cfs.ico --add-data "cfs.ico;." CloudFlareScan.py
+      shell: powershell
+
+    - name: Build on macOS
+      if: matrix.os == 'macos-latest'
+      run: |
+        ls -la
+        # 使用 --add-data 将图标文件添加到打包中，这样运行时可以在 sys._MEIPASS 中找到
+        pyinstaller --onefile --windowed --name CloudFlareScan-macos --icon=cfs.icns --add-data "cfs.icns:." CloudFlareScan.py
+
+    - name: Build on Ubuntu
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+        ls -la
+        pyinstaller --onefile --name CloudFlareScan-linux CloudFlareScan.py
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: CloudFlareScan-${{ matrix.os }}
+        path: dist/
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Download all artifacts
+      uses: actions/download-artifact@v4
+      with:
+        path: artifacts
+
+    - name: Create release
+      uses: ncipollo/release-action@v1
+      with:
+        tag: v${{ github.run_number }}
+        name: Release v${{ github.run_number }}
+        body: |
+          自动构建版本 ${{ github.run_number }}
+          - Windows: CloudFlareScan-windows.exe
+          - macOS: CloudFlareScan-macos
+          - Linux: CloudFlareScan-linux
+        artifacts: |
+          artifacts/CloudFlareScan-windows-latest/*
+          artifacts/CloudFlareScan-macos-latest/*
+          artifacts/CloudFlareScan-ubuntu-latest/*
+        token: ${{ secrets.GITHUB_TOKEN }}
+        draft: false
+        prerelease: false
