@@ -41,14 +41,18 @@ jobs:
           
       - name: Commit and push results
         run: |
+          ls -la
+          
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           
-          git add ipv4.csv ipv6.csv || true
+          git add ipv4.csv ipv6.csv 2>/dev/null || true
+          
+          git status
           
           if git diff --staged --quiet; then
             echo "No changes to commit"
           else
             git commit -m "Update scan results: $(date +'%Y-%m-%d %H:%M:%S')"
-            git push
+            git push origin HEAD:${GITHUB_REF}
           fi
