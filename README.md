@@ -32,13 +32,18 @@
 #### 可选参数
 - **IATA 码**：（可选）指定地区码进行测速，例如 LAX（洛杉矶）、SJC（圣何塞）、HKG（香港）等
 
+#### IATA 码优先级
+1. **手动输入**：在手动触发 workflow 时填写的 IATA 码（优先级最高）
+2. **仓库 Variables**：在仓库设置中保存的 `IATA_CODE`（优先级次之）
+3. **空值**：不指定 IATA 码，扫描所有地区（默认行为）
+
 #### 设置默认 IATA 码（可选）
 如果你希望定时自动运行或多次手动运行都使用相同的 IATA 码，可以在仓库中设置 Variables：
 
 1. 进入仓库的 **Settings** 标签页
 2. 在左侧菜单选择 **Secrets and variables** → **Actions**
 3. 选择 **Variables** 标签
-4. 点击 **New repository variable**
+4. 点击 **New repository Variables**
 5. Name 填写 `IATA_CODE`
 6. Value 填写你的 IATA 码（例如：HKG、LAX、SJC 等）
 7. 点击 **Add variable** 保存
