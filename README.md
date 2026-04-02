@@ -32,12 +32,24 @@
 #### 可选参数
 - **IATA 码**：（可选）指定地区码进行测速，例如 LAX（洛杉矶）、SJC（圣何塞）、HKG（香港）等
 
+#### 设置默认 IATA 码（可选）
+如果你希望定时自动运行或多次手动运行都使用相同的 IATA 码，可以在仓库中设置 Variables：
+
+1. 进入仓库的 **Settings** 标签页
+2. 在左侧菜单选择 **Secrets and variables** → **Actions**
+3. 选择 **Variables** 标签
+4. 点击 **New repository variable**
+5. Name 填写 `IATA_CODE`
+6. Value 填写你的 IATA 码（例如：HKG、LAX、SJC 等）
+7. 点击 **Add variable** 保存
+
 #### 使用步骤
 1. 将代码推送到 GitHub 仓库
-2. 进入仓库的 **Actions** 标签页
-3. 选择 **"Cloudflare Scan"** workflow
-4. 点击 **"Run workflow"** 按钮（可选择填写 IATA 码）
-5. 等待扫描完成，`ipv4.csv` 和 `ipv6.csv` 将自动提交到仓库
+2. （可选）按照上述步骤设置默认 IATA 码
+3. 进入仓库的 **Actions** 标签页
+4. 选择 **"Cloudflare Scan"** workflow
+5. 点击 **"Run workflow"** 按钮（可临时填写 IATA 码覆盖默认值）
+6. 等待扫描完成，`ipv4.csv` 和 `ipv6.csv` 将自动提交到仓库
 
 #### 常见 IATA 码
 - HKG：香港
