@@ -104,12 +104,16 @@ def get_cloudflare_ips():
             if data.get("success"):
                 ipv4_cidrs = data["result"].get("ipv4_cidrs", [])
                 ipv6_cidrs = data["result"].get("ipv6_cidrs", [])
-                print(f"成功从API获取IP段: IPv4({len(ipv4_cidrs)}), IPv6({len(ipv6_cidrs)})")
-                return ipv4_cidrs, ipv6_cidrs
+                # 检查返回的数据是否为空
+                if ipv4_cidrs or ipv6_cidrs:
+                    print(f"成功从API获取IP段: IPv4({len(ipv4_cidrs)}), IPv6({len(ipv6_cidrs)})")
+                    return ipv4_cidrs, ipv6_cidrs
+                else:
+                    print("API返回空数据，使用默认IP段")
     except Exception as e:
         print(f"获取CloudFlare IP段失败: {e}")
     
-    # 如果API获取失败，使用默认IP段
+    # 如果API获取失败或返回空数据，使用默认IP段
     print("使用默认IP段")
     return DEFAULT_IPV4_CIDRS, DEFAULT_IPV6_CIDRS
 
@@ -118,7 +122,43 @@ CF_IPV4_CIDRS, CF_IPV6_CIDRS = get_cloudflare_ips()
 
 # 默认IATA码映射（作为API获取失败时的 fallback）
 DEFAULT_AIRPORT_CODES = {
- 
+    "HKG": "香港", "TPE": "台北", "KHH": "高雄", "MFM": "澳门",
+    "NRT": "东京", "HND": "东京", "KIX": "大阪", "NGO": "名古屋",
+    "FUK": "福冈", "CTS": "札幌", "OKA": "冲绳",
+    "ICN": "首尔", "GMP": "首尔", "PUS": "釜山",
+    "SIN": "新加坡", "BKK": "曼谷", "DMK": "曼谷",
+    "KUL": "吉隆坡", "HKT": "普吉岛",
+    "MNL": "马尼拉", "CEB": "宿务",
+    "HAN": "河内", "SGN": "胡志明市",
+    "JKT": "雅加达", "DPS": "巴厘岛",
+    "DEL": "德里", "BOM": "孟买", "MAA": "金奈",
+    "DXB": "迪拜", "AUH": "阿布扎比",
+    "SJC": "圣何塞", "LAX": "洛杉矶", "SFO": "旧金山",
+    "SEA": "西雅图", "PDX": "波特兰",
+    "LAS": "拉斯维加斯", "PHX": "菲尼克斯",
+    "DEN": "丹佛", "DFW": "达拉斯", "IAH": "休斯顿",
+    "ORD": "芝加哥", "MSP": "明尼阿波利斯",
+    "ATL": "亚特兰大", "MIA": "迈阿密", "MCO": "奥兰多",
+    "JFK": "纽约", "EWR": "纽约", "LGA": "纽约",
+    "BOS": "波士顿", "PHL": "费城", "IAD": "华盛顿",
+    "YYZ": "多伦多", "YVR": "温哥华", "YUL": "蒙特利尔",
+    "LHR": "伦敦", "LGW": "伦敦", "STN": "伦敦",
+    "CDG": "巴黎", "ORY": "巴黎",
+    "FRA": "法兰克福", "MUC": "慕尼黑", "TXL": "柏林",
+    "AMS": "阿姆斯特丹", "EIN": "埃因霍温",
+    "MAD": "马德里", "BCN": "巴塞罗那",
+    "FCO": "罗马", "MXP": "米兰", "LIN": "米兰",
+    "ZRH": "苏黎世", "GVA": "日内瓦",
+    "VIE": "维也纳", "PRG": "布拉格",
+    "WAW": "华沙", "KRK": "克拉科夫",
+    "HEL": "赫尔辛基", "OSL": "奥斯陆", "ARN": "斯德哥尔摩",
+    "CPH": "哥本哈根",
+    "SYD": "悉尼", "MEL": "墨尔本", "BNE": "布里斯班",
+    "PER": "珀斯", "ADL": "阿德莱德",
+    "AKL": "奥克兰", "WLG": "惠灵顿",
+    "GRU": "圣保罗", "GIG": "里约热内卢", "EZE": "布宜诺斯艾利斯",
+    "SCL": "圣地亚哥", "LIM": "利马", "BOG": "波哥大",
+    "JNB": "约翰内斯堡", "CPT": "开普敦", "CAI": "开罗",
 }
 
 # 从URL获取IATA码映射
@@ -132,12 +172,16 @@ def get_airport_codes():
         response = requests.get(url, timeout=10)
         if response.status_code == 200:
             data = response.json()
-            print(f"成功从API获取IATA码: {len(data)} 个")
-            return data
+            # 检查返回的数据是否为空
+            if data:
+                print(f"成功从API获取IATA码: {len(data)} 个")
+                return data
+            else:
+                print("API返回空数据，使用默认IATA码")
     except Exception as e:
         print(f"获取IATA码失败: {e}")
     
-    # 如果API获取失败，使用默认IATA码
+    # 如果API获取失败或返回空数据，使用默认IATA码
     print("使用默认IATA码")
     return DEFAULT_AIRPORT_CODES
 
