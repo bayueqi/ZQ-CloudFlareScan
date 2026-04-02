@@ -702,6 +702,12 @@ def run_speed_test(results: List[Dict], max_test_count=10, port=443) -> List[Dic
 def save_results_to_csv(results: List[Dict], filename: str):
     if not results:
         print(f"警告：没有结果可保存到 {filename}")
+        # 即使没有结果，也创建一个空文件
+        with open(filename, 'w', newline='', encoding='utf-8-sig') as csvfile:
+            fieldnames = ['排名', 'IP地址', '地区码', '地区', '延迟(ms)', '下载速度(MB/s)', '端口', '测速类型']
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+            writer.writeheader()
+        print(f"已创建空文件: {filename}")
         return
     
     with open(filename, 'w', newline='', encoding='utf-8-sig') as csvfile:
