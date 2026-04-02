@@ -732,6 +732,10 @@ def progress_callback(current, total, success_count, speed):
 
 async def main():
     port = 443
+    iata_code = os.environ.get('IATA_CODE', '').strip().upper()
+    
+    if iata_code:
+        print(f"指定 IATA 码: {iata_code}，将只保留该地区的结果")
     
     # IPv4 扫描
     print("=" * 50)
@@ -746,9 +750,18 @@ async def main():
     
     if ipv4_results:
         print(f"\nIPv4 扫描完成，共找到 {len(ipv4_results)} 个可用IP")
-        print("开始 IPv4 测速...")
-        ipv4_speed_results = run_speed_test(ipv4_results, max_test_count=20, port=port)
-        save_results_to_csv(ipv4_speed_results, "ipv4.csv")
+        
+        # 如果指定了 IATA 码，只保留该地区的
+        if iata_code:
+            ipv4_results = [r for r in ipv4_results if r.get('iata_code') == iata_code]
+            print(f"已过滤为 {iata_code} 地区的 {len(ipv4_results)} 个IP")
+        
+        if ipv4_results:
+            print("开始 IPv4 测速...")
+            ipv4_speed_results = run_speed_test(ipv4_results, max_test_count=20, port=port)
+            save_results_to_csv(ipv4_speed_results, "ipv4.csv")
+        else:
+            print("过滤后没有可用IP")
     else:
         print("IPv4 扫描未找到可用IP")
     
@@ -765,9 +778,18 @@ async def main():
     
     if ipv6_results:
         print(f"\nIPv6 扫描完成，共找到 {len(ipv6_results)} 个可用IP")
-        print("开始 IPv6 测速...")
-        ipv6_speed_results = run_speed_test(ipv6_results, max_test_count=20, port=port)
-        save_results_to_csv(ipv6_speed_results, "ipv6.csv")
+        
+        # 如果指定了 IATA 码，只保留该地区的
+        if iata_code:
+            ipv6_results = [r for r in ipv6_results if r.get('iata_code') == iata_code]
+            print(f"已过滤为 {iata_code} 地区的 {len(ipv6_results)} 个IP")
+        
+        if ipv6_results:
+            print("开始 IPv6 测速...")
+            ipv6_speed_results = run_speed_test(ipv6_results, max_test_count=20, port=port)
+            save_results_to_csv(ipv6_speed_results, "ipv6.csv")
+        else:
+            print("过滤后没有可用IP")
     else:
         print("IPv6 扫描未找到可用IP")
 
