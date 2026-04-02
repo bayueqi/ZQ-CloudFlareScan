@@ -116,232 +116,33 @@ def get_cloudflare_ips():
 # 初始化IP段
 CF_IPV4_CIDRS, CF_IPV6_CIDRS = get_cloudflare_ips()
 
-# 按大洲分类的IATA代码映射
-AIRPORT_CODES = {
-    "亚洲": {
-        "中国": {
-            "HKG": "香港", "MFM": "澳门", "CAN": "广州", "CTU": "成都",
-            "DLC": "大连", "HGH": "杭州", "HRB": "哈尔滨", "NKG": "南京",
-            "PEK": "北京", "SHA": "上海", "SZX": "深圳", "TAO": "青岛", "XIY": "西安"
-        },
-        "中国台湾": {
-            "TPE": "台北", "KHH": "高雄"
-        },
-        "日本": {
-            "NRT": "东京", "HND": "东京", "KIX": "大阪", "NGO": "名古屋",
-            "FUK": "福冈", "CTS": "札幌", "OKA": "冲绳"
-        },
-        "韩国": {
-            "ICN": "首尔", "GMP": "首尔", "PUS": "釜山"
-        },
-        "新加坡": {
-            "SIN": "新加坡"
-        },
-        "泰国": {
-            "BKK": "曼谷", "DMK": "曼谷", "CNX": "清迈", "HKT": "普吉岛"
-        },
-        "马来西亚": {
-            "KUL": "吉隆坡"
-        },
-        "菲律宾": {
-            "MNL": "马尼拉", "CEB": "宿务"
-        },
-        "越南": {
-            "HAN": "河内", "SGN": "胡志明市"
-        },
-        "印度尼西亚": {
-            "JKT": "雅加达", "DPS": "巴厘岛", "CGK": "雅加达"
-        },
-        "印度": {
-            "DEL": "德里", "BOM": "孟买", "MAA": "金奈", "CCU": "加尔各答", "BLR": "班加罗尔"
-        },
-        "阿联酋": {
-            "DXB": "迪拜", "AUH": "阿布扎比"
-        },
-        "巴基斯坦": {
-            "KHI": "卡拉奇", "ISB": "伊斯兰堡"
-        },
-        "孟加拉国": {
-            "DAC": "达卡"
-        },
-        "尼泊尔": {
-            "KTM": "加德满都"
-        },
-        "乌兹别克斯坦": {
-            "TAS": "塔什干"
-        },
-        "哈萨克斯坦": {
-            "ALA": "阿拉木图"
-        },
-        "沙特阿拉伯": {
-            "DMM": "达曼", "JED": "吉达", "RUH": "利雅得"
-        }
-    },
-    "欧洲": {
-        "英国": {
-            "LHR": "伦敦", "LGW": "伦敦", "STN": "伦敦", "MAN": "曼彻斯特", "BHX": "伯明翰", "GLA": "格拉斯哥", "EDI": "爱丁堡"
-        },
-        "法国": {
-            "CDG": "巴黎", "ORY": "巴黎", "MRS": "马赛", "NCE": "尼斯", "LYS": "里昂"
-        },
-        "德国": {
-            "FRA": "法兰克福", "MUC": "慕尼黑", "TXL": "柏林", "BER": "柏林", "HAM": "汉堡", "DUS": "杜塞尔多夫", "CGN": "科隆"
-        },
-        "荷兰": {
-            "AMS": "阿姆斯特丹", "EIN": "埃因霍温"
-        },
-        "西班牙": {
-            "MAD": "马德里", "BCN": "巴塞罗那", "PMI": "帕尔马", "AGP": "马拉加"
-        },
-        "意大利": {
-            "FCO": "罗马", "MXP": "米兰", "LIN": "米兰", "BLQ": "博洛尼亚", "VCE": "威尼斯", "PSA": "比萨"
-        },
-        "瑞士": {
-            "ZRH": "苏黎世", "GVA": "日内瓦"
-        },
-        "奥地利": {
-            "VIE": "维也纳"
-        },
-        "捷克": {
-            "PRG": "布拉格"
-        },
-        "波兰": {
-            "WAW": "华沙", "KRK": "克拉科夫"
-        },
-        "芬兰": {
-            "HEL": "赫尔辛基"
-        },
-        "挪威": {
-            "OSL": "奥斯陆"
-        },
-        "瑞典": {
-            "ARN": "斯德哥尔摩"
-        },
-        "丹麦": {
-            "CPH": "哥本哈根"
-        },
-        "比利时": {
-            "BRU": "布鲁塞尔"
-        },
-        "爱尔兰": {
-            "DUB": "都柏林"
-        },
-        "葡萄牙": {
-            "LIS": "里斯本"
-        },
-        "拉脱维亚": {
-            "RIX": "里加"
-        },
-        "爱沙尼亚": {
-            "TLL": "塔林"
-        },
-        "立陶宛": {
-            "VNO": "维尔纽斯"
-        },
-        "克罗地亚": {
-            "ZAG": "萨格勒布"
-        },
-        "希腊": {
-            "ATH": "雅典"
-        },
-        "土耳其": {
-            "IST": "伊斯坦布尔"
-        },
-        "乌克兰": {
-            "KBP": "基辅"
-        },
-        "俄罗斯": {
-            "LED": "圣彼得堡", "SVO": "莫斯科"
-        },
-        "格鲁吉亚": {
-            "TBS": "第比利斯"
-        }
-    },
-    "北美洲": {
-        "美国": {
-            "SJC": "圣何塞", "LAX": "洛杉矶", "SFO": "旧金山",
-            "SEA": "西雅图", "PDX": "波特兰", "LAS": "拉斯维加斯",
-            "PHX": "菲尼克斯", "DEN": "丹佛", "DFW": "达拉斯",
-            "IAH": "休斯顿", "ORD": "芝加哥", "MSP": "明尼阿波利斯",
-            "ATL": "亚特兰大", "MIA": "迈阿密", "MCO": "奥兰多",
-            "JFK": "纽约", "EWR": "纽约", "LGA": "纽约",
-            "BOS": "波士顿", "PHL": "费城", "IAD": "华盛顿",
-            "CLT": "夏洛特", "SLC": "盐湖城", "DCA": "华盛顿",
-            "BWI": "巴尔的摩", "SAN": "圣地亚哥", "STL": "圣路易斯",
-            "MCI": "堪萨斯城", "CLE": "克利夫兰", "CMH": "哥伦布",
-            "IND": "印第安纳波利斯", "DET": "底特律"
-        },
-        "加拿大": {
-            "YYZ": "多伦多", "YVR": "温哥华", "YUL": "蒙特利尔", "YYC": "卡尔加里", "YEG": "埃德蒙顿", "YOW": "渥太华"
-        },
-        "墨西哥": {
-            "MEX": "墨西哥城", "CUN": "坎昆", "MTY": "蒙特雷", "GDL": "瓜达拉哈拉"
-        },
-        "巴拿马": {
-            "PTY": "巴拿马城"
-        },
-        "萨尔瓦多": {
-            "SAP": "圣萨尔瓦多"
-        },
-        "哥斯达黎加": {
-            "SJO": "圣何塞"
-        },
-        "危地马拉": {
-            "GUA": "危地马拉城"
-        }
-    },
-    "南美洲": {
-        "巴西": {
-            "GRU": "圣保罗", "GIG": "里约热内卢", "BSB": "巴西利亚", "CWB": "库里蒂巴", "POA": "阿雷格里港", "FLN": "弗洛里亚诺波利斯"
-        },
-        "阿根廷": {
-            "EZE": "布宜诺斯艾利斯", "AEP": "布宜诺斯艾利斯", "MDZ": "门多萨"
-        },
-        "智利": {
-            "SCL": "圣地亚哥", "IPC": "复活节岛", "PUQ": "安托法加斯塔"
-        },
-        "秘鲁": {
-            "LIM": "利马", "CUZ": "库斯科", "AQP": "阿雷基帕"
-        },
-        "哥伦比亚": {
-            "BOG": "波哥大", "MDE": "麦德林", "CTG": "卡塔赫纳"
-        }
-    },
-    "大洋洲": {
-        "澳大利亚": {
-            "SYD": "悉尼", "MEL": "墨尔本", "BNE": "布里斯班", "PER": "珀斯", "ADL": "阿德莱德", "CBR": "堪培拉"
-        },
-        "新西兰": {
-            "AKL": "奥克兰", "WLG": "惠灵顿", "CHC": "克赖斯特彻奇"
-        }
-    },
-    "非洲": {
-        "南非": {
-            "JNB": "约翰内斯堡", "CPT": "开普敦"
-        },
-        "埃及": {
-            "CAI": "开罗"
-        },
-        "尼日利亚": {
-            "LOS": "拉各斯"
-        },
-        "加纳": {
-            "ACC": "阿克拉"
-        },
-        "埃塞俄比亚": {
-            "ADD": "亚的斯亚贝巴"
-        },
-        "肯尼亚": {
-            "NBO": "内罗毕"
-        },
-        "坦桑尼亚": {
-            "DAR": "达累斯萨拉姆"
-        },
-        "毛里求斯": {
-            "MRU": "毛里求斯"
-        }
-    }
+# 默认IATA码映射（作为API获取失败时的 fallback）
+DEFAULT_AIRPORT_CODES = {
+ 
 }
+
+# 从URL获取IATA码映射
+def get_airport_codes():
+    """从URL获取IATA码映射"""
+    import requests
+    import json
+    
+    url = "https://cdn.jsdelivr.net/gh/LufsX/Cloudflare-Data-Center-IATA-Code-list/cloudflare-iata-zh.json"
+    try:
+        response = requests.get(url, timeout=10)
+        if response.status_code == 200:
+            data = response.json()
+            print(f"成功从API获取IATA码: {len(data)} 个")
+            return data
+    except Exception as e:
+        print(f"获取IATA码失败: {e}")
+    
+    # 如果API获取失败，使用默认IATA码
+    print("使用默认IATA码")
+    return DEFAULT_AIRPORT_CODES
+
+# 初始化IATA码
+AIRPORT_CODES = get_airport_codes()
 
 PORT_OPTIONS = ["443", "2053", "2083", "2087", "2096", "8443"]
 
@@ -491,15 +292,8 @@ async def get_iata_code_async(session: aiohttp.ClientSession, ip: str, timeout: 
     return None
 
 def get_iata_translation(iata_code: str) -> str:
-    if not iata_code:
-        return "未知地区"
-    
-    # 遍历嵌套字典查找IATA代码
-    for continent, countries in AIRPORT_CODES.items():
-        for country, cities in countries.items():
-            if iata_code in cities:
-                return cities[iata_code]
-    
+    if iata_code in AIRPORT_CODES:
+        return AIRPORT_CODES[iata_code]
     return iata_code
 
 async def async_tcp_ping(ip: str, port: int, timeout: float = 1.0) -> Optional[float]:
@@ -938,16 +732,7 @@ class SpeedTestWorker(QThread):
             
             if self.region_code:
                 filtered_results = [r for r in self.results if r.get('iata_code') and r['iata_code'].upper() == self.region_code]
-                # 查找地区名称
-                region_name = "未知地区"
-                for continent, countries in AIRPORT_CODES.items():
-                    for country, cities in countries.items():
-                        if self.region_code in cities:
-                            region_name = cities[self.region_code]
-                            break
-                    if region_name != "未知地区":
-                        break
-                self.status_message.emit(f"开始地区测速：{self.region_code} ({region_name}) (端口: {self.current_port})")
+                self.status_message.emit(f"开始地区测速：{self.region_code} ({AIRPORT_CODES.get(self.region_code, '未知地区')}) (端口: {self.current_port})")
                 self.status_message.emit(f"找到 {len(filtered_results)} 个 {self.region_code} 地区的IP")
             else:
                 filtered_results = self.results
@@ -982,24 +767,12 @@ class SpeedTestWorker(QThread):
                 if not colo or colo == "Unknown":
                     colo = ip_info.get('iata_code', 'UNKNOWN')
                 
-                # 查找地区名称
-                chinese_name = "未知地区"
-                if colo:
-                    colo_code = colo.upper()
-                    for continent, countries in AIRPORT_CODES.items():
-                        for country, cities in countries.items():
-                            if colo_code in cities:
-                                chinese_name = cities[colo_code]
-                                break
-                        if chinese_name != "未知地区":
-                            break
-                
                 speed_result = {
                     'ip': ip,
                     'latency': latency,
                     'download_speed': download_speed,
                     'iata_code': colo.upper() if colo else 'UNKNOWN',
-                    'chinese_name': chinese_name,
+                    'chinese_name': AIRPORT_CODES.get(colo.upper(), '未知地区') if colo else '未知地区',
                     'test_type': test_type,
                     'port': self.current_port  
                 }
@@ -1420,7 +1193,7 @@ class CloudflareScanUI(QWidget):
         row3.addStretch()
         
         region_container = QWidget()
-        region_container.setFixedSize(400, BTN_H)
+        region_container.setFixedSize(220, BTN_H)
         region_layout = QHBoxLayout(region_container)
         region_layout.setContentsMargins(0, 0, 0, 0)
         region_layout.setSpacing(5)
@@ -1450,6 +1223,7 @@ class CloudflareScanUI(QWidget):
                 padding: 0px 5px;
                 font-family: "{SYSTEM_FONT}";
                 color: #111827;
+                min-width: 200px;
             }}
             QComboBox:focus {{
                 border-color: #F97316;
@@ -1461,6 +1235,12 @@ class CloudflareScanUI(QWidget):
                 border: none;
                 border-top-right-radius: 5px;
                 border-bottom-right-radius: 5px;
+            }}
+            QComboBox QAbstractItemView {{
+                min-width: 250px;
+                min-height: 300px;
+                font-size: 12px;
+                padding: 5px;
             }}
         """)
         
@@ -1871,26 +1651,11 @@ class CloudflareScanUI(QWidget):
             self.status_display.append("错误：请选择一个地区！")
             return
         
-        # 跳过分类项
-        if selected_name.startswith("---") or not selected_name.strip():
-            self.status_display.append("错误：请选择一个具体的地区，而不是分类！")
-            return
-        
-        # 处理多列城市的情况，提取实际的城市名称
-        # 去除前导空格，然后按空格分割，取第一个非空项
-        city_name = selected_name.strip().split()[0]
-        
-        # 通过城市名称反向查找地区码
+        # 通过地区名称反向查找地区码
         region_code = None
-        for continent, countries in AIRPORT_CODES.items():
-            for country, cities in countries.items():
-                for code, city in cities.items():
-                    if city == city_name:
-                        region_code = code
-                        break
-                if region_code:
-                    break
-            if region_code:
+        for code, name in AIRPORT_CODES.items():
+            if name == selected_name:
+                region_code = code
                 break
         
         if not region_code:
@@ -1911,17 +1676,7 @@ class CloudflareScanUI(QWidget):
             self.status_display.append("错误：测速数量必须是数字！")
             return
         
-        # 检查地区码是否存在
-        region_code_exists = False
-        for continent, countries in AIRPORT_CODES.items():
-            for country, cities in countries.items():
-                if region_code in cities:
-                    region_code_exists = True
-                    break
-            if region_code_exists:
-                break
-        
-        if not region_code_exists:
+        if region_code not in AIRPORT_CODES:
             self.status_display.append(f"警告：地区码 {region_code} 不在已知列表中，将继续尝试测速")
         
         self.speed_testing = True
@@ -2052,47 +1807,22 @@ class CloudflareScanUI(QWidget):
                 # 启用地区选择框并更新选项
                 self.combo_region.setEnabled(True)
                 
-                # 提取扫描结果中存在的IATA代码
-                existing_iata_codes = set()
+                # 提取扫描结果中存在的地区
+                regions = set()
                 for ip_info in self.scan_results:
-                    iata_code = ip_info.get("iata_code", "")
-                    if iata_code and iata_code != "UNKNOWN":
-                        existing_iata_codes.add(iata_code)
-                
-                # 按大洲和国家分类整理地区
-                region_categories = {}
-                for iata_code in existing_iata_codes:
-                    for continent, countries in AIRPORT_CODES.items():
-                        for country, cities in countries.items():
-                            if iata_code in cities:
-                                city_name = cities[iata_code]
-                                if continent not in region_categories:
-                                    region_categories[continent] = {}
-                                if country not in region_categories[continent]:
-                                    region_categories[continent][country] = set()
-                                region_categories[continent][country].add(city_name)
-                                break
+                    region = ip_info.get("chinese_name", "")
+                    # 确保只添加有效的中文名称，排除IATA代码和未知地区
+                    if region and region != "未知地区" and len(region) >= 2:
+                        regions.add(region)
                 
                 # 清空现有选项，保留空选项
                 current_text = self.combo_region.currentText()
                 self.combo_region.clear()
                 self.combo_region.addItem("")
                 
-                # 添加分类和地区选项
-                for continent in sorted(region_categories.keys()):
-                    # 添加大洲分隔符
-                    self.combo_region.addItem(f"--- {continent} ---")
-                    countries = region_categories[continent]
-                    for country in sorted(countries.keys()):
-                        # 添加国家分隔符
-                        self.combo_region.addItem(f"  {country}")
-                        # 收集并排序城市
-                        cities = sorted(countries[country])
-                        # 将城市按每行3个分组
-                        for i in range(0, len(cities), 3):
-                            # 组合成一行，用制表符分隔
-                            city_group = "    " + "    ".join(cities[i:i+3])
-                            self.combo_region.addItem(city_group)
+                # 添加扫描结果中存在的地区
+                for region in sorted(regions):
+                    self.combo_region.addItem(region)
                 
                 # 始终设置为第一个空选项，避免默认显示第一个地区
                 self.combo_region.setCurrentIndex(0)
