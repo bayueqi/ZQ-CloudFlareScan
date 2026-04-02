@@ -35,9 +35,25 @@ jobs:
           
       - name: Run scan
         env:
-          IATA_CODE: ${{ inputs.iata_code || vars.IATA_CODE || '' }}
+          # 先尝试使用手动输入的值，没有则使用仓库变量
+          MANUAL_IATA: ${{ inputs.iata_code }}
+          REPO_IATA: ${{ vars.IATA_CODE }}
         run: |
-          echo "IATA_CODE environment variable: '${{ env.IATA_CODE }}'"
+          # 确定使用哪个 IATA 码
+          if [ -n "$MANUAL_IATA" ]; then
+            IATA_CODE="$MANUAL_IATA"
+          elif [ -n "$REPO_IATA" ]; then
+            IATA_CODE="$REPO_IATA"
+          else
+            IATA_CODE=""
+          fi
+          
+          echo "Manual input: '$MANUAL_IATA'"
+          echo "Repository variable: '$REPO_IATA'"
+          echo "Using IATA_CODE: '$IATA_CODE'"
+          
+          # 设置环境变量并运行脚本
+          export IATA_CODE
           python scan_cli.py
           
       - name: Commit and push results
