@@ -1872,7 +1872,7 @@ class CloudflareScanUI(QWidget):
             return
         
         # 跳过分类项
-        if selected_name.startswith("---") or not selected_name.strip() or "  " in selected_name[:4]:
+        if selected_name.startswith("---") or not selected_name.strip():
             self.status_display.append("错误：请选择一个具体的地区，而不是分类！")
             return
         
